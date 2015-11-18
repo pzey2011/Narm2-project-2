@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * Created by Peyman Zeynali on 11/14/2015.
  */
 public class Server {
+    protected int          id;
     protected int          port   = 1000;
     protected ServerSocket serverSocket = null;
     protected boolean      isStopped    = false;
@@ -44,9 +45,9 @@ public class Server {
                     throw new RuntimeException(
                             "Error accepting client connection", e);
                 }
-                counter++;
+                counter++;//*****
                 new Thread(
-                        new WorkerRunnable(clientSocket,counter)).start();
+                        new WorkerRunnable(clientSocket,counter)).start();//*****
               //  Thread.currentThread().run();
                 listener.close();
             }catch(SocketTimeoutException s)

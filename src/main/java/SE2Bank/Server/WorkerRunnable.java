@@ -1,7 +1,10 @@
 package SE2Bank.Server;
 
+import SE2Bank.Transaction;
+
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * Created by Peyman Zeynali on 11/17/2015.
@@ -20,11 +23,23 @@ public class WorkerRunnable implements Runnable{
         InputStream is = clientSocket.getInputStream();
 
             ObjectInputStream ois = new ObjectInputStream(is);
-            System.out.println(String.valueOf(ois.readObject()));
+            Transaction t=new Transaction();
+            int sizeOfTransactions=Integer.valueOf(ois.readObject().toString());//receive
+            System.out.println("size:"+sizeOfTransactions);
+            for (int i = 0; i <sizeOfTransactions ; i++) {
+                int id=Integer.valueOf(ois.readObject().toString());
+                System.out.println("transaction id:"+id);
+                String type=ois.readObject().toString();
+                System.out.println("type:"+type);
+                int amount=Integer.valueOf(ois.readObject().toString());
+                System.out.println("amount:"+amount);
+                int deposit=Integer.valueOf(ois.readObject().toString());
+                System.out.println("deposit:"+deposit);
+            }
             OutputStream  out = clientSocket.getOutputStream();
             ObjectOutputStream oos=new ObjectOutputStream(out);
             String s=new String("Salam client!"+this.client);
-            oos.writeObject(s);
+            oos.writeObject(s);                                 //send
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
