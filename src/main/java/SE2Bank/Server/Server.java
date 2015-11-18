@@ -7,6 +7,7 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by Peyman Zeynali on 11/14/2015.
@@ -23,6 +24,7 @@ public class Server {
     }
 
     public void run() throws IOException {
+        int counter=0;
         while(!isStopped())
         {
             try
@@ -42,28 +44,10 @@ public class Server {
                     throw new RuntimeException(
                             "Error accepting client connection", e);
                 }
-                InputStream is=clientSocket.getInputStream();
-                ObjectInputStream ois=new ObjectInputStream(is);
-                try {
-
-                    System.out.println(String.valueOf(ois.readObject()));
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                OutputStream out=clientSocket.getOutputStream();
-                ObjectOutputStream oos=new ObjectOutputStream(out);
-                String s=new String("Salam client!");
-                oos.writeObject(s);
-
-             /*   System.out.println("Just connected to "
-                        + server.getRemoteSocketAddress());
-                DataInputStream in =
-                        new DataInputStream(server.getInputStream());
-                System.out.println(in.readUTF());*/
-              /*  DataOutputStream out =
-                        new DataOutputStream(server.getOutputStream());
-                out.writeUTF("Thank you for connecting to "
-                        + server.getLocalSocketAddress() + "\nGoodbye!");*/
+                counter++;
+                new Thread(
+                        new WorkerRunnable(clientSocket,counter)).start();
+              //  Thread.currentThread().run();
                 listener.close();
             }catch(SocketTimeoutException s)
             {
@@ -81,4 +65,5 @@ public class Server {
     private synchronized boolean isStopped() {
         return this.isStopped;
     }
+
 }
