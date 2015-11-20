@@ -1,9 +1,14 @@
 package SE2Bank.Server;
 
+import SE2Bank.Customer;
+import SE2Bank.JsonParser;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -26,6 +31,9 @@ public class Server {
 
     public void run() throws IOException {
         int counter=0;
+        List<Customer> addedCostumers=new ArrayList<Customer>();
+        addedCostumers=readJson();
+
         while(!isStopped())
         {
             try
@@ -46,6 +54,7 @@ public class Server {
                             "Error accepting client connection", e);
                 }
                 counter++;//*****
+
                 new Thread(
                         new WorkerRunnable(clientSocket,counter)).start();//*****
               //  Thread.currentThread().run();
@@ -66,5 +75,18 @@ public class Server {
     private synchronized boolean isStopped() {
         return this.isStopped;
     }
-
+    public List<Customer> readJson(){
+        try {
+            return JsonParser.readJson();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+//    public List<Customer> addCustomerسFromJsonFile(String jsonString){
+//        List<Customer> addedCostumers=new ArrayList<Customer>();
+//        jsonString.
+//
+//
+//    }
 }

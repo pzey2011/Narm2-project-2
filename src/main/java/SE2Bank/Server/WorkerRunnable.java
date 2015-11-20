@@ -36,10 +36,10 @@ public class WorkerRunnable implements Runnable{
                 int deposit=Integer.valueOf(ois.readObject().toString());
                 System.out.println("deposit:"+deposit);
             }
-            OutputStream  out = clientSocket.getOutputStream();
-            ObjectOutputStream oos=new ObjectOutputStream(out);
-            String s=new String("Salam client!"+this.client);
-            oos.writeObject(s);                                 //send
+ //           OutputStream  out = clientSocket.getOutputStream();
+//            ObjectOutputStream oos=new ObjectOutputStream(out);
+//            String s=new String("Salam client!"+this.client);
+//            oos.writeObject(s);                                 //send
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

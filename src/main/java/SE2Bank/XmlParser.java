@@ -3,15 +3,14 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
+
 import org.xml.sax.SAXException;
 
 /**
@@ -49,31 +48,59 @@ public class XmlParser {
         }
         return transactions;
     }
-    protected static Node getNode(String tagName, NodeList nodes) {
-        for ( int x = 0; x < nodes.getLength(); x++ ) {
-            Node node = nodes.item(x);
-            if (node.getNodeName().equalsIgnoreCase(tagName)) {
-                return node;
-            }
+    public static int readPort(String fileName) {
+        NodeList nList = null;
+        int port=0;
+        try {
+            nList = readXmlFileByTagName(fileName, "server");
+            Node node = nList.item(0);
+            Element eElement=(Element)node;
+            port=Integer.valueOf(eElement.getAttribute("port").toString());
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
         }
-
-        return null;
+        return port;
     }
-    protected String getNodeAttr(String tagName, String attrName, NodeList nodes ) {
-        for ( int x = 0; x < nodes.getLength(); x++ ) {
-            Node node = nodes.item(x);
-            if (node.getNodeName().equalsIgnoreCase(tagName)) {
-                NodeList childNodes = node.getChildNodes();
-                for (int y = 0; y < childNodes.getLength(); y++ ) {
-                    Node data = childNodes.item(y);
-                    if ( data.getNodeType() == Node.ATTRIBUTE_NODE ) {
-                        if ( data.getNodeName().equalsIgnoreCase(attrName) )
-                            return data.getNodeValue();
-                    }
-                }
-            }
-        }
 
-        return "";
+    public static String readIP(String fileName) {
+        NodeList nList = null;
+        String ip=null;
+        int port=0;
+        try {
+            nList = readXmlFileByTagName(fileName, "server");
+            Node node = nList.item(0);
+            Element eElement=(Element)node;
+            ip=eElement.getAttribute("ip").toString();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+        return ip;
+    }
+
+    public static String readOutLogPath(String fileName) {
+        NodeList nList = null;
+        String path=null;
+        int port=0;
+        try {
+            nList = readXmlFileByTagName(fileName, "outLog");
+            Node node = nList.item(0);
+            Element eElement=(Element)node;
+            path=eElement.getAttribute("path").toString();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+        return path;
     }
 }

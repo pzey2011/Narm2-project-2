@@ -1,12 +1,10 @@
 package SE2Bank.Client;
 import java.io.*;
 
+import SE2Bank.JsonParser;
 import SE2Bank.Transaction;
 import SE2Bank.XmlParser;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
 import org.xml.sax.SAXException;
 /**
  * Hello world!
@@ -26,13 +24,15 @@ public class Client
     private Transaction t;
 
     public Client(){
-        serverName = "localhost";
-        serverPort =1000;
+
     }
 
     public void start()
     {
        try{
+           outLogPath=readOutLogPath();
+           serverPort=readPort();
+           serverName=readIP();
             Socket client = new Socket(serverName, serverPort);
          //   System.out.println("Just connected to "
            //         + client.getRemoteSocketAddress());
@@ -68,9 +68,21 @@ public class Client
            e.printStackTrace();
        }
 }
-    public void logToTerminal(){
+
+    private String readOutLogPath() {
+        return XmlParser.readOutLogPath("terminal.xml");
+    }
+
+    private String readIP() {
+        return XmlParser.readIP("terminal.xml");
+    }
+
+    private int readPort() {
+        return XmlParser.readPort("terminal.xml");
 
     }
+
+
     public List<Transaction> readTransactions(){
         List<Transaction> transactions=null;
 
