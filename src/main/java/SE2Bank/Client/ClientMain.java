@@ -10,13 +10,10 @@ import java.io.IOException;
 public class ClientMain {
     public static void main(String[] args) {
         Client c=new Client();
-        for (int i = 0; i <9 ; i++) {
+
            c=new Client();
 
-        }
-        for (int i = 0; i <10 ; i++) {
-
-            try {
+           try {
                 c.start();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -25,4 +22,3 @@ public class ClientMain {
     }
 
 
-}

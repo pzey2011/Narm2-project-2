@@ -1,6 +1,7 @@
 package SE2Bank.Client;
 import java.io.*;
 
+import SE2Bank.EventLogger;
 import SE2Bank.Transaction;
 import SE2Bank.XmlParser;
 
@@ -40,6 +41,7 @@ public class Client
             OutputStream outToServer = client.getOutputStream();
             ObjectOutputStream oos =
                    new ObjectOutputStream(outToServer);
+
            List<Transaction> t=null;
             t=readTransactions();
            oos.writeObject(t.size());
@@ -56,9 +58,13 @@ public class Client
                oos.writeObject(terminalType);
                oos.writeObject(serverName);
                oos.writeObject(serverPort);
+               System.out.println("Salam client!"+i);
+               InputStream inFromServer = client.getInputStream();
+               ObjectInputStream ois = new ObjectInputStream(inFromServer);
+               String logFromServer=ois.readObject().toString();
+               EventLogger.writeClientLogFile(outLogPath,logFromServer);
            }
-            InputStream inFromServer = client.getInputStream();
-            ObjectInputStream ois = new ObjectInputStream(inFromServer);
+
 
            //  String logFromServer=ois.readObject().toString();
           // EventLogger.writeClientLogFile(this);

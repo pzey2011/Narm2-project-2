@@ -39,12 +39,12 @@ public class Server {
         return logContentText;
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, ProgramException {
         int counter=0;
 
         customerDeposits=readJsonAddCustomers();
 
-        while(!isStopped())
+        while(!isStopped)
         {
             try
             {
@@ -56,7 +56,7 @@ public class Server {
                 try {
                     clientSocket = listener.accept();
                 } catch (IOException e) {
-                    if(isStopped()) {
+                    if(isStopped) {
                         System.out.println("Server Stopped.") ;
                         break;
                     }
@@ -64,7 +64,7 @@ public class Server {
                             "Error accepting client connection", e);
                 }
                 counter++;//*****
-
+             //   System.out.println("Salam server2!");
                 new Thread(
                         new WorkerRunnable(clientSocket,counter)).start();//*****
               //  Thread.currentThread().run();
@@ -83,9 +83,9 @@ public class Server {
         }
     }
 
-    private synchronized boolean isStopped() {
-        return this.isStopped;
-    }
+//    private synchronized boolean isStopped() {
+//        return this.isStopped;
+//    }
 
    ///////readJsonAddCustomers
     public List<Customer> readJsonAddCustomers(){
@@ -103,21 +103,31 @@ public class Server {
         for (int i = 0; i <customerDeposits.size() ; i++) {
             if(customerDeposits.get(i).getId().equals(d.getId()))
             {
-                calcNewCustomerDeposit(i,d);
+                try
+                {
+                    calcNewCustomerDeposit(i,d);
+                }
+                catch (ProgramException p)
+                {
+                    p.getStackTrace();
+                }
             }
         }
     }
 ////////
     ///////////calcNewCustomerDeposits
-    public static void calcNewCustomerDeposit(int index, Deposit d) throws IOException {
-        ProgramException p = null;
+    public static void calcNewCustomerDeposit(int index, Deposit d) throws IOException,ProgramException {
+
         int newBalanceAmount = customerDeposits.get(index).getInitialBalance() + d.getAmount();
         Customer currentCustomer=customerDeposits.get(index);
 
         if (newBalanceAmount > currentCustomer.getUpperBound()) {
             isSuccessfull=false;
             eventLog();
+            isSuccessfull=true;
+           // System.out.println("Customer: " + currentCustomer.getName() + " UpperBound was not observed!");
             throw new ProgramException("Customer: "+currentCustomer.getName()+" UpperBound was not observed!");
+
 
         } else {
             customerDeposits.get(index).setInitialBalance(newBalanceAmount);
@@ -131,8 +141,8 @@ public class Server {
         JsonParser.writeJson(customerDeposits);
     }
     public static void eventLog() throws IOException {
-        String content=logContentText+"successfull:"+Server.isSuccessfull()+'\n';
-        EventLogger.writeServerLogFile(JsonParser.getServerLoggingFile(),content);
+        logContentText=logContentText+"successfull:"+Server.isSuccessfull()+'\n';
+        EventLogger.writeServerLogFile(JsonParser.getServerLoggingFile(),logContentText);
     }
 
     public static boolean isSuccessfull() {

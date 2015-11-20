@@ -1,6 +1,7 @@
 package SE2Bank.Server;
 
 import SE2Bank.EventLogger;
+import SE2Bank.ProgramException;
 import SE2Bank.Transaction;
 
 import java.io.*;
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public class WorkerRunnable implements Runnable{
 
-    protected Socket clientSocket = null;
+    protected static Socket clientSocket = null;
     protected int client   = 0;
     private String logContentText="";
     private String fileName="";
@@ -49,18 +50,20 @@ public class WorkerRunnable implements Runnable{
                 //server Port
                 String serverPort=ois.readObject().toString();
                 //setContent text log file because successfulliness of the transaction
-
+                System.out.println("Salam server!"+i);
                 logContentText="transaction id:"+id+'\n'+"amount:"+amount+'\n'+"deposit id:"+deposit+'\n'+"terminal id:"+terminalId+'\n'+"terminal type:"+terminalType+'\n';
                 Server.setLogContentText(logContentText);
                 Server.updateCustomerDeposits(new Deposit(deposit,type,amount));
+
+                OutputStream  out = clientSocket.getOutputStream();
+                ObjectOutputStream oos=new ObjectOutputStream(out);
+                oos.writeObject(Server.getLogContentText());
             }
 
 
           //  Server.updateJson();
 
- //           OutputStream  out = clientSocket.getOutputStream();
-//            ObjectOutputStream oos=new ObjectOutputStream(out);
-//            String s=new String("Salam client!"+this.client);
+
 //            oos.writeObject(s);                                 //send
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -68,9 +71,10 @@ public class WorkerRunnable implements Runnable{
             e.printStackTrace();
         }
 
-
     }
 
+public static void sendLogFileContext(String content) throws IOException {
 
+}
 
 }
