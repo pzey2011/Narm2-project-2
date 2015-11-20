@@ -16,7 +16,11 @@ public class ClientMain {
         }
         for (int i = 0; i <10 ; i++) {
 
-            c.start();
+            try {
+                c.start();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 

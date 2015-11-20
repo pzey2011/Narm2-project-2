@@ -69,7 +69,7 @@ public class XmlParser {
     public static String readIP(String fileName) {
         NodeList nList = null;
         String ip=null;
-        int port=0;
+
         try {
             nList = readXmlFileByTagName(fileName, "server");
             Node node = nList.item(0);
@@ -88,7 +88,7 @@ public class XmlParser {
     public static String readOutLogPath(String fileName) {
         NodeList nList = null;
         String path=null;
-        int port=0;
+
         try {
             nList = readXmlFileByTagName(fileName, "outLog");
             Node node = nList.item(0);
@@ -103,4 +103,43 @@ public class XmlParser {
         }
         return path;
     }
+    public static String readTerminalId(String fileName)
+    {
+        NodeList nList = null;
+        String terminalId=null;
+
+        try {
+            nList = readXmlFileByTagName(fileName, "terminal");
+            Node node = nList.item(0);
+            Element eElement=(Element)node;
+            terminalId=eElement.getAttribute("id").toString();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+        return terminalId;
+    }
+    public static String readTerminalType(String fileName)
+    {
+        NodeList nList = null;
+        String terminalType=null;
+
+        try {
+            nList = readXmlFileByTagName(fileName, "terminal");
+            Node node = nList.item(0);
+            Element eElement=(Element)node;
+            terminalType=eElement.getAttribute("type").toString();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+        return terminalType;
+    }
+
 }

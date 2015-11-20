@@ -1,7 +1,7 @@
 package SE2Bank.Server;
 
 import SE2Bank.Customer;
-import SE2Bank.JsonParser;
+import SE2Bank.EventLogger;
 import SE2Bank.ProgramException;
 
 import java.io.*;
@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by Peyman Zeynali on 11/14/2015.
@@ -26,8 +24,19 @@ public class Server {
     protected Thread       runningThread= null;
     protected ExecutorService threadPool =
             Executors.newFixedThreadPool(10);
+    private static boolean      isSuccessfull    = true;
     static List<Customer> customerDeposits=new ArrayList<Customer>();
+    private static String logContentText=null;
+
     public Server() {
+    }
+
+    public static void setLogContentText(String logContentText) {
+        Server.logContentText = logContentText;
+    }
+
+    public static String getLogContentText() {
+        return logContentText;
     }
 
     public void run() throws IOException {
@@ -90,8 +99,7 @@ public class Server {
     /////////
 
     //////updateCustomerDeposits
-    public static void updateCustomerDeposits(Deposit d)
-    {
+    public static void updateCustomerDeposits(Deposit d) throws IOException {
         for (int i = 0; i <customerDeposits.size() ; i++) {
             if(customerDeposits.get(i).getId().equals(d.getId()))
             {
@@ -101,15 +109,19 @@ public class Server {
     }
 ////////
     ///////////calcNewCustomerDeposits
-    private static void calcNewCustomerDeposit(int index, Deposit d) {
+    public static void calcNewCustomerDeposit(int index, Deposit d) throws IOException {
         ProgramException p = null;
         int newBalanceAmount = customerDeposits.get(index).getInitialBalance() + d.getAmount();
         Customer currentCustomer=customerDeposits.get(index);
 
         if (newBalanceAmount > currentCustomer.getUpperBound()) {
-            throw new ProgramException("Customer: "+currentCustomer.getName()+" UpperBound is not observed!");
+            isSuccessfull=false;
+            eventLog();
+            throw new ProgramException("Customer: "+currentCustomer.getName()+" UpperBound was not observed!");
+
         } else {
             customerDeposits.get(index).setInitialBalance(newBalanceAmount);
+            eventLog();
             System.out.println("successfully "+currentCustomer.getName()+" updated!");
         }
     }
@@ -118,6 +130,15 @@ public class Server {
     public static void updateJson() throws IOException {
         JsonParser.writeJson(customerDeposits);
     }
+    public static void eventLog() throws IOException {
+        String content=logContentText+"successfull:"+Server.isSuccessfull()+'\n';
+        EventLogger.writeServerLogFile(JsonParser.getServerLoggingFile(),content);
+    }
+
+    public static boolean isSuccessfull() {
+        return isSuccessfull;
+    }
+
 
 //    public List<Customer> addCustomerسFromJsonFile(String jsonString){
 //        List<Customer> addedCostumers=new ArrayList<Customer>();

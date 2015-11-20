@@ -1,7 +1,6 @@
 package SE2Bank.Client;
 import java.io.*;
 
-import SE2Bank.JsonParser;
 import SE2Bank.Transaction;
 import SE2Bank.XmlParser;
 
@@ -18,7 +17,7 @@ public class Client
 {
     private int  serverPort;
     private String serverName;
-    private int terminalId;
+    private String terminalId;
     private String terminalType;
     private String outLogPath;
     private Transaction t;
@@ -27,12 +26,14 @@ public class Client
 
     }
 
-    public void start()
-    {
+    public void start() throws ClassNotFoundException {
        try{
            outLogPath=readOutLogPath();
            serverPort=readPort();
            serverName=readIP();
+           terminalId=readTerminalId();
+           terminalType=readTerminalType();
+
             Socket client = new Socket(serverName, serverPort);
          //   System.out.println("Just connected to "
            //         + client.getRemoteSocketAddress());
@@ -51,16 +52,23 @@ public class Client
                oos.writeObject(t.get(i).getAmount());
                System.out.println(t.get(i).getDepositId());
                oos.writeObject(t.get(i).getDepositId());
+               oos.writeObject(terminalId);
+               oos.writeObject(terminalType);
+               oos.writeObject(serverName);
+               oos.writeObject(serverPort);
            }
             InputStream inFromServer = client.getInputStream();
-            ObjectInputStream in = new ObjectInputStream(inFromServer);
+            ObjectInputStream ois = new ObjectInputStream(inFromServer);
+
+           //  String logFromServer=ois.readObject().toString();
+          // EventLogger.writeClientLogFile(this);
          // out.writeUTF("Hello from "
         //           + client.getLocalSocketAddress());
-           try {
-               System.out.println(String.valueOf(in.readObject()));
-           } catch (ClassNotFoundException e) {
-               e.printStackTrace();
-           }
+//           try {
+//               System.out.println(String.valueOf(in.readObject()));
+//           } catch (ClassNotFoundException e) {
+//               e.printStackTrace();
+//           }
 
            //System.out.println("Server says " + in.readUTF());
             client.close();
@@ -68,6 +76,14 @@ public class Client
            e.printStackTrace();
        }
 }
+
+    private String readTerminalType() {
+        return XmlParser.readTerminalType("terminal.xml");
+    }
+
+    private String readTerminalId() {
+        return XmlParser.readTerminalId("terminal.xml");
+    }
 
     private String readOutLogPath() {
         return XmlParser.readOutLogPath("terminal.xml");

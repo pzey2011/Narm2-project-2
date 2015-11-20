@@ -1,4 +1,4 @@
-package SE2Bank;
+package SE2Bank.Server;
 
 /**
  * Created by Peyman Zeynali on 11/18/2015.
@@ -6,11 +6,9 @@ package SE2Bank;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import SE2Bank.Server.Deposit;
-import com.sun.xml.internal.fastinfoset.util.CharArray;
+import SE2Bank.Customer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -18,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 
 public class JsonParser {
     private static String serverPort;
+    private static String serverLoggingFile;
     public static List<Customer> readJson() throws IOException {
         JSONArray obj3=new JSONArray();
         JSONObject obj1=new JSONObject();
@@ -30,6 +29,7 @@ public class JsonParser {
             Object obj =  parser.parse(s);
             obj1=(JSONObject)obj;
             serverPort=obj1.get("port").toString();
+            serverLoggingFile=obj1.get("outLog").toString();
             obj3=(JSONArray)obj1.get("deposits");
         } catch (ParseException e) {
             e.printStackTrace();
@@ -64,10 +64,19 @@ public class JsonParser {
         }
 
         jsonRoot.put("deposits", jsonDepositsList);
+        jsonRoot.put("outLog",serverLoggingFile);
         FileWriter file = new FileWriter("core.json");
         file.write(jsonRoot.toJSONString());
         file.flush();
         file.close();
+    }
+
+    public static String getServerLoggingFile() {
+        return serverLoggingFile;
+    }
+
+    public static void setServerLoggingFile(String serverLoggingFile) {
+        JsonParser.serverLoggingFile = serverLoggingFile;
     }
 
     public String getServerPort() {
