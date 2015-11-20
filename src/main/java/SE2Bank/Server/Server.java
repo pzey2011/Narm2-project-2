@@ -33,7 +33,7 @@ public class Server {
     public void run() throws IOException {
         int counter=0;
 
-        customerDeposits=readJson();
+        customerDeposits=readJsonAddCustomers();
 
         while(!isStopped())
         {
@@ -73,11 +73,13 @@ public class Server {
             }
         }
     }
+
     private synchronized boolean isStopped() {
         return this.isStopped;
     }
-   ///////readJson
-    public List<Customer> readJson(){
+
+   ///////readJsonAddCustomers
+    public List<Customer> readJsonAddCustomers(){
         try {
             return JsonParser.readJson();
         } catch (IOException e) {
@@ -86,6 +88,7 @@ public class Server {
         return null;
     }
     /////////
+
     //////updateCustomerDeposits
     public static void updateCustomerDeposits(Deposit d)
     {
@@ -109,6 +112,11 @@ public class Server {
             customerDeposits.get(index).setInitialBalance(newBalanceAmount);
             System.out.println("successfully "+currentCustomer.getName()+" updated!");
         }
+    }
+    ////////////
+    ////////////updateJSON
+    public static void updateJson() throws IOException {
+        JsonParser.writeJson(customerDeposits);
     }
 
 //    public List<Customer> addCustomerسFromJsonFile(String jsonString){

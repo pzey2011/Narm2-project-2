@@ -17,7 +17,7 @@ import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
 
 public class JsonParser {
-
+    private static String serverPort;
     public static List<Customer> readJson() throws IOException {
         JSONArray obj3=new JSONArray();
         JSONObject obj1=new JSONObject();
@@ -29,7 +29,7 @@ public class JsonParser {
             String s=obj2.toString();
             Object obj =  parser.parse(s);
             obj1=(JSONObject)obj;
-            System.out.println(obj1.get("deposits").toString());
+            serverPort=obj1.get("port").toString();
             obj3=(JSONArray)obj1.get("deposits");
         } catch (ParseException e) {
             e.printStackTrace();
@@ -41,7 +41,6 @@ public class JsonParser {
             String customerName=tempObj.get("customer").toString();
             String id=tempObj.get("id").toString();
 
-
             Integer upperBound=Integer.parseInt(tempObj.get("upperBound").toString().replace(",", ""));
             Integer initialBalance=Integer.parseInt(tempObj.get("initialBalance").toString().replace(",", ""));
             addedCostumers.add(new Customer(customerName, id, upperBound, initialBalance));
@@ -49,4 +48,33 @@ public class JsonParser {
         return addedCostumers;
     }
 
+    public static void writeJson(List<Customer> customerDeposits) throws IOException {
+        JSONObject jsonRoot = new JSONObject();
+        jsonRoot.put("port", serverPort);
+        JSONArray jsonDepositsList = new JSONArray();
+        for (int i = 0; i <customerDeposits.size() ; i++) {
+            JSONObject jsonDepositsObject=new JSONObject();
+            Customer currentCustomer=customerDeposits.get(i);
+            jsonDepositsObject.put("upperBound",currentCustomer.getUpperBound());
+            jsonDepositsObject.put("initialBalance",currentCustomer.getInitialBalance());
+            jsonDepositsObject.put("id",currentCustomer.getId());
+            jsonDepositsObject.put("customer", currentCustomer.getName());
+
+            jsonDepositsList.add(jsonDepositsObject);
+        }
+
+        jsonRoot.put("deposits", jsonDepositsList);
+        FileWriter file = new FileWriter("core.json");
+        file.write(jsonRoot.toJSONString());
+        file.flush();
+        file.close();
+    }
+
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(String serverPort) {
+        this.serverPort = serverPort;
+    }
 }

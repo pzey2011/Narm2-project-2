@@ -36,6 +36,7 @@ public class WorkerRunnable implements Runnable{
                 String deposit=ois.readObject().toString();
                 System.out.println("deposit:"+deposit);
                 Server.updateCustomerDeposits(new Deposit(deposit,type,amount));
+                Server.updateJson();
             }
  //           OutputStream  out = clientSocket.getOutputStream();
 //            ObjectOutputStream oos=new ObjectOutputStream(out);
