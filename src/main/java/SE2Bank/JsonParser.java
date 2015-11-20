@@ -21,9 +21,7 @@ public class JsonParser {
     public static List<Customer> readJson() throws IOException {
         JSONArray obj3=new JSONArray();
         JSONObject obj1=new JSONObject();
-        Object[] a=new Object[100];
-        Deposit d=new Deposit();
-        Collection p=new ArrayList();
+
         //String s="[0,{\"1\": {\"2\" : {}]";
         JSONParser parser = new JSONParser();
         try {
@@ -46,7 +44,7 @@ public class JsonParser {
 
             Integer upperBound=Integer.parseInt(tempObj.get("upperBound").toString().replace(",", ""));
             Integer initialBalance=Integer.parseInt(tempObj.get("initialBalance").toString().replace(",", ""));
-                    addedCostumers.add(new Customer(customerName, id, upperBound, initialBalance));
+            addedCostumers.add(new Customer(customerName, id, upperBound, initialBalance));
         }
         return addedCostumers;
     }

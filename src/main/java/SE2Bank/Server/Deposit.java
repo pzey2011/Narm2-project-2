@@ -12,10 +12,13 @@ public class Deposit {
     private int transactionId;
     private String type;
     private int amount;
-    private int id;
+    private String id;
     private String serverloggingFile;
     private List<Customer> customers;
-    public Deposit(){
+    public Deposit(String id,String type, int amount ){
+        this.id=id;
+        this.type=type;
+        this.amount=amount;
         serverloggingFile="server.out";
     }
     public int getTransactionId() {
@@ -42,11 +45,11 @@ public class Deposit {
         this.type = type;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
     public String getServerloggingFile() {

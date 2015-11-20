@@ -27,14 +27,15 @@ public class WorkerRunnable implements Runnable{
             int sizeOfTransactions=Integer.valueOf(ois.readObject().toString());//receive
             System.out.println("size:"+sizeOfTransactions);
             for (int i = 0; i <sizeOfTransactions ; i++) {
-                int id=Integer.valueOf(ois.readObject().toString());
+                String id=ois.readObject().toString();
                 System.out.println("transaction id:"+id);
                 String type=ois.readObject().toString();
                 System.out.println("type:"+type);
                 int amount=Integer.valueOf(ois.readObject().toString());
                 System.out.println("amount:"+amount);
-                int deposit=Integer.valueOf(ois.readObject().toString());
+                String deposit=ois.readObject().toString();
                 System.out.println("deposit:"+deposit);
+                Server.updateCustomerDeposits(new Deposit(deposit,type,amount));
             }
  //           OutputStream  out = clientSocket.getOutputStream();
 //            ObjectOutputStream oos=new ObjectOutputStream(out);

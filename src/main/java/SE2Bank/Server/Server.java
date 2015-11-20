@@ -2,6 +2,7 @@ package SE2Bank.Server;
 
 import SE2Bank.Customer;
 import SE2Bank.JsonParser;
+import SE2Bank.ProgramException;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -25,14 +26,14 @@ public class Server {
     protected Thread       runningThread= null;
     protected ExecutorService threadPool =
             Executors.newFixedThreadPool(10);
-
+    static List<Customer> customerDeposits=new ArrayList<Customer>();
     public Server() {
     }
 
     public void run() throws IOException {
         int counter=0;
-        List<Customer> addedCostumers=new ArrayList<Customer>();
-        addedCostumers=readJson();
+
+        customerDeposits=readJson();
 
         while(!isStopped())
         {
@@ -75,6 +76,7 @@ public class Server {
     private synchronized boolean isStopped() {
         return this.isStopped;
     }
+   ///////readJson
     public List<Customer> readJson(){
         try {
             return JsonParser.readJson();
@@ -83,6 +85,32 @@ public class Server {
         }
         return null;
     }
+    /////////
+    //////updateCustomerDeposits
+    public static void updateCustomerDeposits(Deposit d)
+    {
+        for (int i = 0; i <customerDeposits.size() ; i++) {
+            if(customerDeposits.get(i).getId().equals(d.getId()))
+            {
+                calcNewCustomerDeposit(i,d);
+            }
+        }
+    }
+////////
+    ///////////calcNewCustomerDeposits
+    private static void calcNewCustomerDeposit(int index, Deposit d) {
+        ProgramException p = null;
+        int newBalanceAmount = customerDeposits.get(index).getInitialBalance() + d.getAmount();
+        Customer currentCustomer=customerDeposits.get(index);
+
+        if (newBalanceAmount > currentCustomer.getUpperBound()) {
+            throw new ProgramException("Customer: "+currentCustomer.getName()+" UpperBound is not observed!");
+        } else {
+            customerDeposits.get(index).setInitialBalance(newBalanceAmount);
+            System.out.println("successfully "+currentCustomer.getName()+" updated!");
+        }
+    }
+
 //    public List<Customer> addCustomerسFromJsonFile(String jsonString){
 //        List<Customer> addedCostumers=new ArrayList<Customer>();
 //        jsonString.
