@@ -53,7 +53,13 @@ public class WorkerRunnable implements Runnable{
                 System.out.println("Salam server!"+i);
                 logContentText="transaction id:"+id+'\n'+"amount:"+amount+'\n'+"deposit id:"+deposit+'\n'+"terminal id:"+terminalId+'\n'+"terminal type:"+terminalType+'\n';
                 Server.setLogContentText(logContentText);
-                Server.updateCustomerDeposits(new Deposit(deposit,type,amount));
+                try
+                {
+                    Server.updateCustomerDeposits(new Deposit(deposit, type, amount));
+                }catch(ProgramException p)
+                {
+                    System.out.println(p.getMessage());
+                }
 
                 OutputStream  out = clientSocket.getOutputStream();
                 ObjectOutputStream oos=new ObjectOutputStream(out);

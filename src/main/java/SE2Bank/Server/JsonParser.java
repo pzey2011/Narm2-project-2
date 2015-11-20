@@ -18,26 +18,26 @@ public class JsonParser {
     private static String serverPort;
     private static String serverLoggingFile;
     public static List<Customer> readJson() throws IOException {
-        JSONArray obj3=new JSONArray();
-        JSONObject obj1=new JSONObject();
+        JSONArray DepositsObject=new JSONArray();
+        JSONObject RootObject=new JSONObject();
 
         //String s="[0,{\"1\": {\"2\" : {}]";
         JSONParser parser = new JSONParser();
         try {
-            Object obj2=parser.parse(new FileReader("core.json"));
-            String s=obj2.toString();
-            Object obj =  parser.parse(s);
-            obj1=(JSONObject)obj;
-            serverPort=obj1.get("port").toString();
-            serverLoggingFile=obj1.get("outLog").toString();
-            obj3=(JSONArray)obj1.get("deposits");
+            Object JSONMainObject=parser.parse(new FileReader("core.json"));
+            String JSONMainString=JSONMainObject.toString();
+            Object JSONRootObject =  parser.parse(JSONMainString);
+            RootObject=(JSONObject)JSONRootObject;
+            serverPort=RootObject.get("port").toString();
+            serverLoggingFile=RootObject.get("outLog").toString();
+            DepositsObject=(JSONArray)RootObject.get("deposits");
         } catch (ParseException e) {
             e.printStackTrace();
         }
       //  System.out.println(a[2].toString());
         List<Customer> addedCostumers=new ArrayList<Customer>();
-        for (int i = 0; i <obj3.size() ; i++) {
-            JSONObject tempObj=(JSONObject)obj3.get(i);
+        for (int i = 0; i <DepositsObject.size() ; i++) {
+            JSONObject tempObj=(JSONObject)DepositsObject.get(i);
             String customerName=tempObj.get("customer").toString();
             String id=tempObj.get("id").toString();
 
@@ -48,7 +48,7 @@ public class JsonParser {
         return addedCostumers;
     }
 
-    public static void writeJson(List<Customer> customerDeposits) throws IOException {
+    public synchronized static void writeJson(List<Customer> customerDeposits) throws IOException {
         JSONObject jsonRoot = new JSONObject();
         jsonRoot.put("port", serverPort);
         JSONArray jsonDepositsList = new JSONArray();

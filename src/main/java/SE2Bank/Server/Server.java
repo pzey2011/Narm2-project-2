@@ -27,6 +27,7 @@ public class Server {
     private static boolean      isSuccessfull    = true;
     static List<Customer> customerDeposits=new ArrayList<Customer>();
     private static String logContentText=null;
+    private static boolean      isNotValid    = true;
 
     public Server() {
     }
@@ -103,36 +104,58 @@ public class Server {
         for (int i = 0; i <customerDeposits.size() ; i++) {
             if(customerDeposits.get(i).getId().equals(d.getId()))
             {
+                isNotValid=false;
                 try
                 {
                     calcNewCustomerDeposit(i,d);
                 }
                 catch (ProgramException p)
                 {
-                    p.getStackTrace();
+                    System.out.println(p.getMessage());
                 }
             }
         }
+        if(isNotValid)
+            throw new ProgramException("deposit Id is not valid!");
     }
 ////////
     ///////////calcNewCustomerDeposits
     public static void calcNewCustomerDeposit(int index, Deposit d) throws IOException,ProgramException {
 
-        int newBalanceAmount = customerDeposits.get(index).getInitialBalance() + d.getAmount();
+
         Customer currentCustomer=customerDeposits.get(index);
+        if(d.getType().equals("withdraw"))
+        {
+            int newBalanceAmount = customerDeposits.get(index).getInitialBalance() - d.getAmount();
+            if(newBalanceAmount<0)
+            {
+                isSuccessfull = false;
+                eventLog();
+                isSuccessfull = true;
+                // System.out.println("Customer: " + currentCustomer.getName() + " UpperBound was not observed!");
+                throw new ProgramException("Customer: " + currentCustomer.getName() + " remaining money is not enough!");
+            }
+            else{
+                customerDeposits.get(index).setInitialBalance(newBalanceAmount);
+                eventLog();
+                System.out.println("successfully " + currentCustomer.getName() + " updated!");
+            }
+        }
+        else {
+            int newBalanceAmount = customerDeposits.get(index).getInitialBalance() + d.getAmount();
+            if (newBalanceAmount > currentCustomer.getUpperBound()) {
+                isSuccessfull = false;
+                eventLog();
+                isSuccessfull = true;
+                // System.out.println("Customer: " + currentCustomer.getName() + " UpperBound was not observed!");
+                throw new ProgramException("Customer: " + currentCustomer.getName() + " UpperBound was not observed!");
 
-        if (newBalanceAmount > currentCustomer.getUpperBound()) {
-            isSuccessfull=false;
-            eventLog();
-            isSuccessfull=true;
-           // System.out.println("Customer: " + currentCustomer.getName() + " UpperBound was not observed!");
-            throw new ProgramException("Customer: "+currentCustomer.getName()+" UpperBound was not observed!");
 
-
-        } else {
-            customerDeposits.get(index).setInitialBalance(newBalanceAmount);
-            eventLog();
-            System.out.println("successfully "+currentCustomer.getName()+" updated!");
+            } else {
+                customerDeposits.get(index).setInitialBalance(newBalanceAmount);
+                eventLog();
+                System.out.println("successfully " + currentCustomer.getName() + " updated!");
+            }
         }
     }
     ////////////
