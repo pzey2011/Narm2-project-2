@@ -44,7 +44,23 @@ public class Server {
         int counter=0;
 
         customerDeposits=readJsonAddCustomers();
-
+        Thread inputThread = new Thread(new Runnable() {
+            public void run() {
+                BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+                String line="";
+                try {
+                    while ((line = bf.readLine()) != null) {
+                        if(line.equals("sync"))
+                            updateJson();
+                        else
+                            System.exit(0);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        inputThread.start();
         while(!isStopped)
         {
             try
